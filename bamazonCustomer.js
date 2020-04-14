@@ -66,25 +66,25 @@ var connection = mysql.createConnection({
     .then(function(answer) {
       var query = "SELECT item_id,product_name,price,stock_quantity FROM products WHERE ?";
       connection.query(query, {item_id: answer.productId}, function(err, res) {
-          console.log(res[0].stock_quantity);
-          console.log(answer.quantity)
+        //   console.log(res[0].stock_quantity);
+        //   console.log(answer.quantity)
         if(parseInt(res[0].stock_quantity) >= parseInt(answer.quantity)) {
             var totalCost = parseInt(answer.quantity)*(res[0].price);           
             console.log("Order in process.  Your cost will be $" + totalCost.toFixed(2));
             newQuantity = parseInt(res[0].stock_quantity) - parseInt(answer.quantity);
             userItem = answer.productId;
-            console.log(newQuantity)
+            // console.log(newQuantity)
             updateItems()
         } else {
             console.log("Sorry we do not have enough inventory to fill your order");
-            // displayItems();
+            connection.end();
         }
       });
       });
   };
 
   function updateItems() {
-      console.log(newQuantity)
+    //   console.log(newQuantity)
     var query = connection.query(
         "UPDATE products SET ? WHERE ?",
         [
@@ -98,7 +98,7 @@ var connection = mysql.createConnection({
         function(err,res) {
             if(err) throw err;
             // console.log(res.affectedRows + " quantity changed.");
-            connection.end;
+            connection.end();
         }
         );
   }
