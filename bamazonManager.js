@@ -75,3 +75,19 @@ var connection = mysql.createConnection({
         managerChoice();
     });
  }
+
+ function lowInventory() {
+    console.log("\n")
+    var query = "SELECT item_id,product_name,price,stock_quantity FROM products";
+    connection.query(query, function(err, res) {
+        if(err) throw err;
+        console.log("---Items low on inventory---");
+        for (var i = 0; i < res.length; i++) {
+            if (parseInt(res[i].stock_quantity) < 5) {
+                console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price + " Quantity: " + res[i].stock_quantity);
+                
+            }
+        }
+        connection.end();
+    });
+ }
