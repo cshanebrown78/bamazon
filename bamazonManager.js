@@ -32,7 +32,7 @@ var connection = mysql.createConnection({
     {
       name: "choice",
       type: "list",
-      message: "What is the Item ID of the product you wish to purchase?",
+      message: "Please choose from the list below.",
       choices: [
           "View Products for Sale",
           "View Low Inventory",
@@ -43,7 +43,7 @@ var connection = mysql.createConnection({
   ])
   .then(function(answer) {
     
-    switch (choice) {
+    switch (answer.choice) {
         case "View Products for Sale":
             displayItems();
             break;
@@ -61,4 +61,17 @@ var connection = mysql.createConnection({
             break;
     }
   });
+ }
+
+ function displayItems() {
+    console.log("\n")
+    var query = "SELECT item_id,product_name,price,stock_quantity FROM products";
+    connection.query(query, function(err, res) {
+        if(err) throw err;
+        // console.log(res);
+        for (var i = 0; i < res.length; i++) {
+            console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price + " Quantity: " + res[i].stock_quantity);
+        }
+        managerChoice();
+    });
  }
