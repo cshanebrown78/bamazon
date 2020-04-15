@@ -73,7 +73,7 @@ var connection = mysql.createConnection({
         // console.log(res);
         for (var i = 0; i < res.length; i++) {
             // console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price + " Quantity: " + res[i].stock_quantity);
-            data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price, Quantity : res[i].stock_quantity})
+            data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price.toFixed(2), Quantity : res[i].stock_quantity})
         }
         var columns = (columnify(data, {minWidth: 20}));
         console.log("\n");
@@ -159,6 +159,64 @@ var connection = mysql.createConnection({
         displayItems();
     }
     );
+ }
+
+ function addProduct() {
+  inquirer
+  .prompt([
+    {
+      name: "product",
+      type: "input",
+      message: "What is the product name?",
+    },
+    {
+      name: "department",
+      type: "list",
+      message: "What department will this product sold in?",
+      choices: ["Hardware", "Computers", "Electronics", "Clothing", "Housewares"]
+    },
+    {
+      name: "price",
+      type: "input",
+      message: "What is the price of the product?(0.00)",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      name: "number",
+      type: "input",
+      message: "Quantity?",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    }
+  ])
+  .then(function(answer) {
+    var x = parseFloat(answer.price);
+    y = x.toFixed(2);
+    console.log(y);
+    var query = connection.query(
+      "INSERT INTO products SET ?",
+      {
+        product_name: answer.product,
+        department_name: answer.department,
+        price: y,
+        stock_quantity: answer.number
+      },
+      function (err, res) {
+        if (err) throw err;
+        console.log("\n---" + res.affectedRows + " product inserted!---")
+        displayItems();
+      }
+    );
+  });
  }
 
  function continueOn() {
