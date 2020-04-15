@@ -43,7 +43,6 @@ var connection = mysql.createConnection({
         var columns = (columnify(data, {minWidth: 20}));
         console.log("\n");
         console.log(columns);
-        ;
         customerChoice();
     });
   }
@@ -82,7 +81,7 @@ var connection = mysql.createConnection({
         //   console.log(answer.quantity)
         if(parseInt(res[0].stock_quantity) >= parseInt(answer.quantity)) {
             var totalCost = parseInt(answer.quantity)*(res[0].price);           
-            console.log("Order in process.  Your cost will be $" + totalCost.toFixed(2));
+            console.log("\nOrder in process.  Your cost will be $" + totalCost.toFixed(2));
             newQuantity = parseInt(res[0].stock_quantity) - parseInt(answer.quantity);
             userItem = answer.productId;
             // console.log(newQuantity)
@@ -112,7 +111,7 @@ var connection = mysql.createConnection({
         function(err,res) {
             if(err) throw err;
             // console.log(res.affectedRows + " quantity changed.");
-            connection.end();
+            // connection.end();
         }
         );
   }
@@ -131,15 +130,15 @@ var connection = mysql.createConnection({
       ]
     },
   ])
-  .then(function(answer) {
-    
-    switch (answer.continue) {
+  .then(function(user) {
+        
+    switch (user.continue) {
         case "Yes":
             displayItems();
             break;
 
         case "No":
-            console.log("Thank you for shopping with Bamazon!");
+            console.log("\nThank you for shopping with Bamazon!");
             connection.end();
             break;
         
