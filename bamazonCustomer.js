@@ -1,8 +1,10 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var columnify = require('columnify');
 
 var newQuantity = 0;
 var userItem = 0;
+
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -20,7 +22,7 @@ var connection = mysql.createConnection({
   
   connection.connect(function(err) {
     if (err) throw err;
-    // console.log("Connected")
+    console.log("\n----Welcome to Bamazon!!!----")
     displayItems();
   });
 
@@ -29,9 +31,19 @@ var connection = mysql.createConnection({
     connection.query(query, function(err, res) {
         if(err) throw err;
         // console.log(res);
+        var data = [];
+        
         for (var i = 0; i < res.length; i++) {
-            console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price);
+            // console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price);
+            data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price});
+            
         }
+        // console.table(display);
+        // var columns = (columnify(data, {columns: ['Item_ID', 'Product', 'Price']},{minWidth: 60}));
+        var columns = (columnify(data, {minWidth: 20}));
+        console.log("\n");
+        console.log(columns);
+        ;
         customerChoice();
     });
   }
@@ -74,10 +86,12 @@ var connection = mysql.createConnection({
             newQuantity = parseInt(res[0].stock_quantity) - parseInt(answer.quantity);
             userItem = answer.productId;
             // console.log(newQuantity)
-            updateItems()
+            updateItems();
+            continueOn();
         } else {
             console.log("Sorry we do not have enough inventory to fill your order");
-            connection.end();
+            continueOn();
+            // connection.end();
         }
       });
       });
@@ -102,4 +116,35 @@ var connection = mysql.createConnection({
         }
         );
   }
+
+  function continueOn() {
+    console.log("\n")
+  inquirer
+  .prompt([
+    {
+      name: "continue",
+      type: "list",
+      message: "Would you like to place another order?",
+      choices: [
+          "Yes",
+          "No"
+      ]
+    },
+  ])
+  .then(function(answer) {
+    
+    switch (answer.continue) {
+        case "Yes":
+            displayItems();
+            break;
+
+        case "No":
+            console.log("Thank you for shopping with Bamazon!");
+            connection.end();
+            break;
+        
+    }
+  });
+ }
+  
 
