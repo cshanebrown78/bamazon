@@ -2,6 +2,7 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var columnify = require('columnify');
 
+
 var newQuantity = 0;
 var managerItem = 0;
 
@@ -21,11 +22,12 @@ var connection = mysql.createConnection({
   
   connection.connect(function(err) {
     if (err) throw err;
+    // message displayed when connected to database
     console.log("\n---Welcome to the Manager's Terminal---")
     managerChoice();
   });
 
-
+  // prompts the manager to choose what they want to do
   function managerChoice() {
     console.log("\n")
   inquirer
@@ -43,7 +45,7 @@ var connection = mysql.createConnection({
     },
   ])
   .then(function(answer) {
-    
+    // runs appropriate function based on manager's choice
     switch (answer.choice) {
         case "View Products for Sale":
             displayItems();
@@ -64,17 +66,19 @@ var connection = mysql.createConnection({
   });
  }
 
+//  function that shows all the items
  function displayItems() {
-    // console.log("\n")
+    
     var query = "SELECT item_id,product_name,price,stock_quantity FROM products";
     connection.query(query, function(err, res) {
         if(err) throw err;
-        var data = [];
-        // console.log(res);
+        // variable to store an array of data to use for displaying
+        data = [];
+        // loop for pushing all the the database items into the array
         for (var i = 0; i < res.length; i++) {
-            // console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price + " Quantity: " + res[i].stock_quantity);
             data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price.toFixed(2), Quantity : res[i].stock_quantity})
         }
+        
         var columns = (columnify(data, {minWidth: 20}));
         console.log("\n");
         console.log(columns);
@@ -82,16 +86,18 @@ var connection = mysql.createConnection({
     });
  }
 
+//  function to show low inventory
  function lowInventory() {
-    // console.log("\n")
+    
     var query = "SELECT item_id,product_name,price,stock_quantity FROM products";
     connection.query(query, function(err, res) {
         if(err) throw err;
+        // variable to store an array of data to use for displaying
         var data = [];
         console.log("\n---Items low on inventory---");
+        // loop that checks each items inventory and if low it pushes it into the data array
         for (var i = 0; i < res.length; i++) {
             if (parseInt(res[i].stock_quantity) < 5) {
-                // nodeconsole.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price + " Quantity: " + res[i].stock_quantity);
                 data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price, Quantity : res[i].stock_quantity})
             }
         }
@@ -102,6 +108,7 @@ var connection = mysql.createConnection({
     });
  }
 
+//  function allows the manager to add inventory
  function addInventory(){
   console.log("\n")
   inquirer
@@ -141,6 +148,7 @@ var connection = mysql.createConnection({
   });
 }
 
+//  function that updates the inventory that the manager added
  function updateItems() {
   var query = connection.query(
     "UPDATE products SET ? WHERE ?",
@@ -154,13 +162,13 @@ var connection = mysql.createConnection({
     ],
     function(err,res) {
         if(err) throw err;
-        // console.log(res.affectedRows + " quantity changed.");
-        // connection.end();
+        
         displayItems();
     }
     );
  }
 
+//  function that allows the manager to add a new item
  function addProduct() {
   inquirer
   .prompt([
@@ -219,6 +227,7 @@ var connection = mysql.createConnection({
   });
  }
 
+//  function that allows the manager to continue or exit
  function continueOn() {
   console.log("\n")
 inquirer

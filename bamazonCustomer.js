@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+// npm module for making columns
 var columnify = require('columnify');
 
 var newQuantity = 0;
@@ -22,24 +23,23 @@ var connection = mysql.createConnection({
   
   connection.connect(function(err) {
     if (err) throw err;
+    // message to display when connected
     console.log("\n----Welcome to Bamazon!!!----")
     displayItems();
   });
 
+  // function that displays the items for sale
   function displayItems(){
     var query = "SELECT item_id,product_name,price FROM products";
     connection.query(query, function(err, res) {
         if(err) throw err;
-        // console.log(res);
+        // var that holds the array for displaying the items for sale
         var data = [];
-        
+        // loop to push each item into the data array
         for (var i = 0; i < res.length; i++) {
-            // console.log("Item ID: " + res[i].item_id + " Product: " + res[i].product_name + " Price: " + res[i].price);
             data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price});
-            
         }
-        // console.table(display);
-        // var columns = (columnify(data, {columns: ['Item_ID', 'Product', 'Price']},{minWidth: 60}));
+        
         var columns = (columnify(data, {minWidth: 20}));
         console.log("\n");
         console.log(columns);
@@ -47,6 +47,7 @@ var connection = mysql.createConnection({
     });
   }
 
+  // function that uses inquirer to prompt customer for item and amount to purchase
   function customerChoice() {
       console.log("\n")
     inquirer
@@ -77,27 +78,28 @@ var connection = mysql.createConnection({
     .then(function(answer) {
       var query = "SELECT item_id,product_name,price,stock_quantity FROM products WHERE ?";
       connection.query(query, {item_id: answer.productId}, function(err, res) {
-        //   console.log(res[0].stock_quantity);
-        //   console.log(answer.quantity)
+        // if statement to determine if there is enough quantity and if so calculates the cost for the customer 
         if(parseInt(res[0].stock_quantity) >= parseInt(answer.quantity)) {
             var totalCost = parseInt(answer.quantity)*(res[0].price);           
             console.log("\nOrder in process.  Your cost will be $" + totalCost.toFixed(2));
             newQuantity = parseInt(res[0].stock_quantity) - parseInt(answer.quantity);
+            // stores the new quantity to be used later
             userItem = answer.productId;
-            // console.log(newQuantity)
+
             updateItems();
             continueOn();
         } else {
             console.log("Sorry we do not have enough inventory to fill your order");
             continueOn();
-            // connection.end();
+            
         }
       });
       });
   };
 
+  // function that updates the item quantities in the database
   function updateItems() {
-    //   console.log(newQuantity)
+    
     var query = connection.query(
         "UPDATE products SET ? WHERE ?",
         [
@@ -110,12 +112,12 @@ var connection = mysql.createConnection({
         ],
         function(err,res) {
             if(err) throw err;
-            // console.log(res.affectedRows + " quantity changed.");
-            // connection.end();
+            
         }
         );
   }
 
+  // function that lets the user decide whether to order more or leave
   function continueOn() {
     console.log("\n")
   inquirer
