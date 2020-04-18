@@ -34,3 +34,11 @@ This app is an Amazon-like storefront utilizing MySQL techniques recently earned
   * If a manager selects `Add to Inventory`, it will display a prompt that will let the manager "add more" of any item currently in the store.
 
   * If a manager selects `Add New Product`, it will allow the manager to add a completely new product to the store.
+
+### Demo video here
+
+https://drive.google.com/file/d/192cEdER_zKHqrcd4UCFKnwSBYcvkNEPC/view
+
+### Repo for cloning here
+
+https://github.com/cshanebrown78/bamazon
