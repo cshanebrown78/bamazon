@@ -37,7 +37,7 @@ var connection = mysql.createConnection({
         var data = [];
         // loop to push each item into the data array
         for (var i = 0; i < res.length; i++) {
-            data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price});
+            data.push({Item_ID : res[i].item_id, Product : res[i].product_name, Price : "$ " + res[i].price.toFixed(2)});
         }
         
         var columns = (columnify(data, {minWidth: 20}));
