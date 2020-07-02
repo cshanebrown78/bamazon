@@ -13,6 +13,8 @@ This app is an Amazon-like storefront utilizing MySQL techniques recently earned
     * inquirer
     * columnify
 
+3. You will have to enter your mySQL password on the bamazonCustomer.js and bamazonManager.js file
+
 ## Commands for bamazonCustomer.js
 
 * node bamazonCustomer.js
